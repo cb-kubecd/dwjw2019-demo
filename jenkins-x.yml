@@ -1,1 +1,20 @@
 buildPack: go
+pipelineConfig:
+ pipelines:
+   overrides:
+   - pipeline: release
+     stage: build
+     name: container-build
+     steps:
+     - name: container-build
+       command: /kaniko/executor
+       args:
+       - --cache=true
+       - --cache-dir=/workspace
+       - --context=/workspace/source
+       - --dockerfile=/workspace/source/Dockerfile
+       - --destination=gcr.io/cbjx-bellycurse/dwjw2019-demo:\${inputs.params.version}
+       - --destination=gcr.io/cbjx-bellycurse/dwjw2019-demo:latest
+       - --cache-repo=gcr.io/cbjx-bellycurse/cache
+       dir: /workspace/source
+       image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6

@@ -18,3 +18,26 @@ pipelineConfig:
        - --cache-repo=gcr.io/cbjx-bellycurse/cache
        dir: /workspace/source
        image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
+   - pipeline: release
+     stage: build
+     name: container-build
+     steps:
+     - loop:
+         variable: BASE_IMAGE
+         values:
+         - centos
+         - alpine
+         - ubuntu
+         steps:
+         - name: container-build
+           command: /kaniko/executor
+           args:
+           - --cache=true
+           - --cache-dir=/workspace
+           - --context=/workspace/source
+           - --dockerfile=/workspace/source/Dockerfile.$BASE_IMAGE
+           - --destination=gcr.io/cbjx-bellycurse/dwjw2019-demo-$BASE_IMAGE:\${inputs.params.version}
+           - --destination=gcr.io/cbjx-bellycurse/dwjw2019-demo-$BASE_IMAGE:latest
+           - --cache-repo=gcr.io/cbjx-bellycurse/cache
+           dir: /workspace/source
+           image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
